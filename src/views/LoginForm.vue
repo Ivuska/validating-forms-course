@@ -3,8 +3,9 @@
     <BaseInput
       label="Email"
       type="email"
-      v-model="email"
       :error="emailError"
+      modelValue="email"
+      @change="handleChange"
     />
 
     <BaseInput
@@ -24,6 +25,7 @@
 </template>
 
 <script>
+// Documentation for vee-validate https://vee-validate.logaretm.com/v4/.
 import { useField, useForm } from 'vee-validate'
 
 export default {
@@ -65,6 +67,7 @@ export default {
       onSubmit,
       email: email.value,
       emailError: email.errorMessage,
+      handleChange: email.handleChange,
       password: password.value,
       passwordError: password.errorMessage
     }
