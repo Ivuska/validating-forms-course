@@ -10,6 +10,8 @@
     <BaseInput
       label="Password"
       type="password"
+      v-model="password"
+      :error="passwordError"
     />
 
     <BaseButton
@@ -22,7 +24,7 @@
 </template>
 
 <script>
-import { useField } from 'vee-validate'
+import { useField, useForm } from 'vee-validate'
 
 export default {
   setup () {
@@ -30,21 +32,41 @@ export default {
       alert('Submitted')
     }
 
-    const email = useField('email', function (value) {
-      if (!value) return 'This field is required!'
+    const validations = {
+      email: value => {
+        if (!value) return 'This field is required!'
 
-      const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      if (!regex.test(String(value).toLowerCase())) {
-        return 'Please enter a valid email address'
+        const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        if (!regex.test(String(value).toLowerCase())) {
+          return 'Please enter a valid email address'
+        }
+
+        return true
+      },
+      password: value => {
+        const requiredMessage = 'This field id required!'
+        if (!value === undefined || value === null) return requiredMessage
+        if (!String(value).length) return requiredMessage
+
+        return true
       }
+    }
 
-      return true
+    useForm({
+      validationSchema: validations
     })
+
+    // ! 'email' is the same as email object in validations! If we name the object in validations as 'emailAddr', the param
+    // in useField() must also be 'emailAddr'.
+    const email = useField('email')
+    const password = useField('password')
 
     return {
       onSubmit,
       email: email.value,
-      emailError: email.errorMessage
+      emailError: email.errorMessage,
+      password: password.value,
+      passwordError: password.errorMessage
     }
   }
 }
