@@ -76,6 +76,9 @@
 
 <script>
 import { useField, useForm } from 'vee-validate'
+// Yup has many useful functions for form validation. Find more at https://github.com/jquense/yup.
+import { object, string, number, boolean } from 'yup'
+
 export default {
   data () {
     return {
@@ -91,37 +94,19 @@ export default {
     }
   },
   setup () {
-    const required = value => {
-      const requiredMessage = 'This field is required'
-      if (value === undefined || value === null) return requiredMessage
-      if (!String(value).length) return requiredMessage
-      return true
-    }
-    const minLength = (number, value) => {
-      if (String(value).length < number) return 'Please type at least ' + number + ' characters'
-      return true
-    }
-    const anything = () => {
-      return true
-    }
-
-    const validationSchema = {
-      category: required,
-      title: value => {
-        const req = required(value)
-        if (req !== true) return req
-
-        const min = minLength(3, value)
-        if (min !== true) return min
-
-        return true
-      },
-      description: required,
-      location: undefined,
-      pets: anything,
-      catering: anything,
-      music: anything
-    }
+    // I use only object(), string(), number() and boolean() from yup package as is in import.
+    // If there waw 'import * as yup from 'yup'', then I should write 'yup.object()' etc.
+    const validationSchema = object({
+      // I expect that category field is required and should accept only text.
+      category: string().required(),
+      // I expect that title field is required and should accept only text with at least three characters.
+      title: string().required('A cool title is required.').min(3),
+      description: string().required(),
+      location: string(),
+      pets: number(),
+      catering: boolean(),
+      music: boolean()
+    })
 
     const { handleSubmit, errors } = useForm({
       validationSchema,
